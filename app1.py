@@ -46,7 +46,8 @@ def get_vector_store(text_chunks):
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
     vector_store.save_local("faiss_index")
-
+    return vector_store
+    
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
@@ -73,7 +74,7 @@ def contextualized_question(input: dict):
     else:
         return input["question"]
 
-def get_conversational_chain():
+def get_conversational_chain(vector_store):
     prompt_template = """
         Answer the question as detailed as possible from the provided context, make sure to provide all the details\n\n
         Context:\n {context}?\n
@@ -86,9 +87,9 @@ def get_conversational_chain():
 
     embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
     
-    new_db = FAISS.load_local("faiss_index", embeddings, embeddings, allow_dangerous_deserialization=True)
+    # new_db = FAISS.load_local("faiss_index", embeddings, embeddings, allow_dangerous_deserialization=True)
 
-    retriever = new_db.as_retriever(search_type="similarity", search_kwargs={"k": 6})
+    retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 6})
 
     qa_prompt = ChatPromptTemplate.from_messages(
         [
@@ -119,6 +120,9 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state["chat_history"] = []
     
+    if "vector_store" not in st.session_state:
+        st.session_state["vector_store"] = None
+    
     with st.sidebar:
         st.title("Menu:")
         pdf_docs = st.file_uploader("Upload your PDF Files and Click on the Submit & Process Button",
@@ -129,7 +133,7 @@ def main():
                 with st.spinner("Processing..."):
                     raw_text = get_pdf_text(pdf_docs)
                     text_chunks = get_text_chunks(raw_text)
-                    get_vector_store(text_chunks)
+                    st.session_state["vector_store"] = get_vector_store(text_chunks)
                 st.success("Done")
             else:
                 st.error("Please upload PDF files first.")
@@ -147,7 +151,7 @@ def main():
             st.markdown(prompt)
         
         if pdf_docs:
-            rag_chain = get_conversational_chain()
+            rag_chain = get_conversational_chain(st.session_state["vector_store"])
             ai_msg = rag_chain.invoke({"question": prompt, "chat_history": st.session_state["chat_history"]})
 
             with st.chat_message("assistant"):
