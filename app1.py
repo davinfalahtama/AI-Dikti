@@ -86,7 +86,7 @@ def get_conversational_chain():
 
     embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
     
-    new_db = FAISS.load_local("faiss_index", embeddings)
+    new_db = FAISS.load_local("faiss_index", embeddings, embeddings, allow_dangerous_deserialization=True)
 
     retriever = new_db.as_retriever(search_type="similarity", search_kwargs={"k": 6})
 
