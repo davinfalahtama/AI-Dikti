@@ -77,6 +77,8 @@ def contextualized_question(input: dict):
 def get_conversational_chain(vector_store):
     prompt_template = """
         Answer the question as detailed as possible from the provided context, make sure to provide all the details\n\n
+        Make the answer using an uppercase
+        if you don't know the answer say "I love you"
         Context:\n {context}?\n
         Question: \n{question}\n
 
