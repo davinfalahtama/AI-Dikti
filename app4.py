@@ -75,6 +75,7 @@ def get_conversational_chain():
         If you don't find the answer to the user's question with the examples provided to you below, answer that you didn't find the answer in the documentation and propose him to rephrase his query with more details.\n
         Use bullet points if you have to make a list, only if necessary.\n
         If the question is about code, answer that you don't know the answer.\n
+        If the user ask about your name, answer that your name is Dikti.\n
         DO NOT EVER ANSWER QUESTIONS THAT IS NOT IN THE DOCUMENTS!\n\n
         Context:\n {context}?\n
         Question: \n{question}\n
@@ -115,6 +116,7 @@ def response_generator(text):
 def main():
     st.set_page_config("Chat PDF")
     st.title("Simple chat")
+    st.subheader("Selamat datang di ")
     
     if "chat_history" not in st.session_state:
         st.session_state["chat_history"] = []
@@ -146,7 +148,7 @@ def main():
         ai_msg = rag_chain.invoke({"question": prompt, "chat_history": st.session_state["chat_history"]})
 
         with st.chat_message("assistant"):
-            response = st.write_stream(response_generator(ai_msg.content))
+            response = st.markdown(ai_msg.content)
 
         st.session_state["chat_history"].extend([HumanMessage(content=prompt), ai_msg])
 
