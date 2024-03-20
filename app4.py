@@ -69,11 +69,13 @@ def contextualized_question(input: dict):
 
 def get_conversational_chain():
     prompt_template = """
-        You are a personal Bot assistant for answering any questions about documents of given documents.
-        You are given a question and a set of documents.
-        If the user's question requires you to provide specific information from the documents, give your answer based only on the examples provided below. DON'T generate an answer that is NOT written in the provided examples.
-        If you don't find the answer to the user's question with the examples provided to you below, answer that you didn't find the answer in the documentation and propose him to rephrase his query with more details.
-        Use bullet points if you have to make a list, only if necessary.
+        You are a personal Bot assistant for answering any questions about documents of given documents.\n
+        You are given a question and a set of documents.\n
+        If the user's question requires you to provide specific information from the documents, give your answer based only on the examples provided below. DON'T generate an answer that is NOT written in the provided examples.\n
+        If you don't find the answer to the user's question with the examples provided to you below, answer that you didn't find the answer in the documentation and propose him to rephrase his query with more details.\n
+        Use bullet points if you have to make a list, only if necessary.\n
+        If the question is about code, answer that you don't know the answer.\n
+        If the user ask about your name, answer that your name is Bogu.\n
         DO NOT EVER ANSWER QUESTIONS THAT IS NOT IN THE DOCUMENTS!\n\n
         Context:\n {context}?\n
         Question: \n{question}\n
@@ -112,8 +114,20 @@ def response_generator(text):
         time.sleep(0.05)
 
 def main():
-    st.set_page_config("Chat PDF")
-    st.title("Simple chat")
+    st.set_page_config(
+    page_title="Chat Documents",
+    page_icon="🧊",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://www.extremelycoolapp.com/help',
+        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'About': "# This is a header. This is an extremely cool app!"
+    })
+    st.header(':sparkles: Mau nanya tentang Tugu Jogja dan Candi Borobudur :question:', divider='rainbow')
+    st.subheader("Hallo, aku Bogu. Temukan informasi penting dengan mudah bersama Bogu Buddy.")
+    with st.chat_message("assistant"):
+                st.markdown("Kamu mau nanya apa?")
     
     if "chat_history" not in st.session_state:
         st.session_state["chat_history"] = []
@@ -122,11 +136,15 @@ def main():
     pdf_docs = [os.path.join(docs_path, filename) for filename in os.listdir(docs_path) if filename.endswith('.pdf')]
     
     with st.spinner("Processing..."):
+        start_processing_time = time.time()  # Catat waktu awal pemrosesan
+        
         raw_text = get_pdf_text(pdf_docs)
         text_chunks = get_text_chunks(raw_text)
         get_vector_store(text_chunks)
-    
-    st.success("PDF files processed successfully.")
+        
+        end_processing_time = time.time()  # Catat waktu akhir pemrosesan
+        processing_time = end_processing_time - start_processing_time  # Hitung waktu pemrosesan
+        st.info(f"PDF files processed successfully in {processing_time:.2f} seconds.")  # Tampilkan waktu pemrosesan
     
     for message in st.session_state["chat_history"]:
         if isinstance(message, HumanMessage):
@@ -141,12 +159,20 @@ def main():
         with st.chat_message("user"):
             st.markdown(prompt)
         
+        start_inference_time = time.time()  # Catat waktu awal inferensi
+        
         rag_chain = get_conversational_chain()
         ai_msg = rag_chain.invoke({"question": prompt, "chat_history": st.session_state["chat_history"]})
 
+        end_inference_time = time.time()  # Catat waktu akhir inferensi
+        inference_time = end_inference_time - start_inference_time  # Hitung waktu inferensi
+        
         with st.chat_message("assistant"):
-            response = st.write_stream(response_generator(ai_msg.content))
-
+            # Menampilkan markdown langsung
+           # response_generator_output = response_generator(ai_msg.content)
+            st.markdown(ai_msg.content)
+            st.info(f"Inference time: {inference_time:.2f} seconds.")  # Tampilkan waktu inferensi
+        
         st.session_state["chat_history"].extend([HumanMessage(content=prompt), ai_msg])
 
 if __name__ == "__main__":
