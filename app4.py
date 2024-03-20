@@ -124,7 +124,7 @@ def main():
         'Report a bug': "https://www.extremelycoolapp.com/bug",
         'About': "# This is a header. This is an extremely cool app!"
     })
-    st.header(':sparkles: Ask Your Documents :question:', divider='rainbow')
+    st.header(':sparkles: Mau nanya tentang Tugu Jogja dan Candi Borobudur :question:', divider='rainbow')
     st.subheader("Hallo, aku Bogu. Temukan informasi penting dengan mudah bersama Bogu Buddy.")
     with st.chat_message("assistant"):
                 st.markdown("Kamu mau nanya apa?")
@@ -136,11 +136,15 @@ def main():
     pdf_docs = [os.path.join(docs_path, filename) for filename in os.listdir(docs_path) if filename.endswith('.pdf')]
     
     with st.spinner("Processing..."):
+        start_processing_time = time.time()  # Catat waktu awal pemrosesan
+        
         raw_text = get_pdf_text(pdf_docs)
         text_chunks = get_text_chunks(raw_text)
         get_vector_store(text_chunks)
-    
-    st.success("PDF files processed successfully.")
+        
+        end_processing_time = time.time()  # Catat waktu akhir pemrosesan
+        processing_time = end_processing_time - start_processing_time  # Hitung waktu pemrosesan
+        st.info(f"PDF files processed successfully in {processing_time:.2f} seconds.")  # Tampilkan waktu pemrosesan
     
     for message in st.session_state["chat_history"]:
         if isinstance(message, HumanMessage):
@@ -155,12 +159,20 @@ def main():
         with st.chat_message("user"):
             st.markdown(prompt)
         
+        start_inference_time = time.time()  # Catat waktu awal inferensi
+        
         rag_chain = get_conversational_chain()
         ai_msg = rag_chain.invoke({"question": prompt, "chat_history": st.session_state["chat_history"]})
 
+        end_inference_time = time.time()  # Catat waktu akhir inferensi
+        inference_time = end_inference_time - start_inference_time  # Hitung waktu inferensi
+        
         with st.chat_message("assistant"):
-            response = st.markdown(ai_msg.content)
-
+            # Menampilkan markdown langsung
+           # response_generator_output = response_generator(ai_msg.content)
+            st.markdown(ai_msg.content)
+            st.info(f"Inference time: {inference_time:.2f} seconds.")  # Tampilkan waktu inferensi
+        
         st.session_state["chat_history"].extend([HumanMessage(content=prompt), ai_msg])
 
 if __name__ == "__main__":
