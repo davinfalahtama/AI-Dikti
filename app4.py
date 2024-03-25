@@ -75,7 +75,7 @@ def get_conversational_chain():
         If you don't find the answer to the user's question with the examples provided to you below, answer that you didn't find the answer in the documentation and propose him to rephrase his query with more details.\n
         Use bullet points if you have to make a list, only if necessary.\n
         If the question is about code, answer that you don't know the answer.\n
-        If the user ask about your name, answer that your name is NasiGoreng.\n
+        If the user ask about your name, answer that your name is Elena.\n
         DO NOT EVER ANSWER QUESTIONS THAT IS NOT IN THE DOCUMENTS!\n\n
         Context:\n {context}?\n
         Question: \n{question}\n
@@ -125,7 +125,7 @@ def main():
         'About': "# This is a header. This is an extremely cool app!"
     })
     st.header(':sparkles: Mau nanya tentang PMB ITPLN :question:', divider='rainbow')
-    st.subheader("Hallo, aku NasiGoreng. Temukan informasi seputar PMB ITPLN bersamaku.")
+    st.subheader("Hallo, aku Elena. Temukan informasi seputar PMB ITPLN bersamaku.")
     with st.chat_message("assistant"):
                 st.markdown("Kamu mau nanya apa?")
     
