@@ -20,18 +20,16 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_openai import ChatOpenAI
 
-class ChatGoogleGemini:
+class ChatOpenAi:
     def __init__(self,store):
         # Initialize class attributes
         self.chat_history = []  # List to store chat history
         self.vector_store = None  # Vector store for embeddings
         self.store = store
         # Initialize the AI model
-        self.model = ChatGoogleGenerativeAI(model="gemini-pro", 
-                                            temperature=0.5, 
-                                            convert_system_message_to_human=True,
-                                            google_api_key="AIzaSyBYgcagyUPWzHFRyTZO3o8r85oZqmC25E8")
+        self.model = ChatOpenAI(temperature=0.5,openai_api_key="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")
 
     def process_files(self, files):
         """
@@ -44,13 +42,10 @@ class ChatGoogleGemini:
         - raw_text: Concatenated text extracted from files.
         """
         raw_text = ""
-        for file in files:
-            # Extract text from PDF files
-            if file.name.endswith('.pdf'):
-                raw_text += self.extract_text_from_pdf(file)
+
+        raw_text += self.extract_text_from_pdf(files)
             # Extract text from CSV files
-            elif file.name.endswith('.csv'):
-                raw_text += self.extract_text_from_csv(file)
+
         return raw_text
 
     def extract_text_from_pdf(self, file):
