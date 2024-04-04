@@ -21,6 +21,7 @@ from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_openai import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings
 
 class ChatOpenAi:
     def __init__(self,store):
@@ -42,10 +43,13 @@ class ChatOpenAi:
         - raw_text: Concatenated text extracted from files.
         """
         raw_text = ""
-
-        raw_text += self.extract_text_from_pdf(files)
+        for file in files:
+            # Extract text from PDF files
+            if file.name.endswith('.pdf'):
+                raw_text += self.extract_text_from_pdf(file)
             # Extract text from CSV files
-
+            elif file.name.endswith('.csv'):
+                raw_text += self.extract_text_from_csv(file)
         return raw_text
 
     def extract_text_from_pdf(self, file):
@@ -100,7 +104,7 @@ class ChatOpenAi:
         Returns:
         - None
         """
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001",google_api_key="AIzaSyBYgcagyUPWzHFRyTZO3o8r85oZqmC25E8")
+        embeddings = OpenAIEmbeddings(openai_api_key="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")
         self.vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
         
 

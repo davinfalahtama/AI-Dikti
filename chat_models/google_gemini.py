@@ -147,9 +147,10 @@ class ChatGoogleGemini:
         """
         ### Answer question ###
         prompt_template = """
-                            You are a friendly chatbot named Bogu that helps to answer question regarding Indonesian Culture\n
+                            You are a friendly chatbot named Bogu that helps to answer question regarding Tugu Jogja\n
                             Answer the question as detailed as possible from the provided context, make sure to provide all the details\n
                             If the question is about code, answer that you don't know the answer.\n
+                            Don't Repeat the question.\n
                             Context:\n {context}?\n
                         """
         qa_prompt = ChatPromptTemplate.from_messages(
