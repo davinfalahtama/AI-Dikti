@@ -39,12 +39,6 @@ def main():
             st.session_state["model"] = ChatOpenAi(st.session_state["chat_history"])
 
 
-    
-    st.write(option)
-    st.write(st.session_state["model"])
-    st.write(st.session_state["model"].vector_store)
-
-
     if "chat_input" not in st.session_state:
         st.session_state["chat_input"] = True
 
