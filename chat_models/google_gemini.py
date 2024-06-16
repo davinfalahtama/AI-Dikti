@@ -31,7 +31,7 @@ class ChatGoogleGemini:
         self.model = ChatGoogleGenerativeAI(model="gemini-pro", 
                                             temperature=0.5, 
                                             convert_system_message_to_human=True,
-                                            google_api_key="AIzaSyBYgcagyUPWzHFRyTZO3o8r85oZqmC25E8")
+                                            google_api_key="AIzaSyDD08m_1t8kFezXzBsevBbOLSNQTlRVk0o")
 
     def process_files(self, files):
         """
@@ -105,7 +105,7 @@ class ChatGoogleGemini:
         Returns:
         - None
         """
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001",google_api_key="AIzaSyBYgcagyUPWzHFRyTZO3o8r85oZqmC25E8")
+        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001",google_api_key="AIzaSyDD08m_1t8kFezXzBsevBbOLSNQTlRVk0o")
         self.vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
         
 

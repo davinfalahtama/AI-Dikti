@@ -78,7 +78,6 @@ def main():
             st.markdown(prompt)
 
         if pdf_docs:
-            st.write(st.session_state["model"].vector_store)
             ai_msg = st.session_state["model"].run_invoke(
                 prompt, st.session_state["session_id"])
             st.session_state["chat_history"] = st.session_state["model"].store
